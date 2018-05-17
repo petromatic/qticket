@@ -1,4 +1,4 @@
-package ar.com.azous.qrttoo;
+package ar.com.azous.petromatic.qticket;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("ar.com.azous.qrttoo", appContext.getPackageName());
+        assertEquals("ar.com.azous.petromatic.qticket", appContext.getPackageName());
     }
 }

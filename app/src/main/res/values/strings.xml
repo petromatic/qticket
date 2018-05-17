@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">qrttoo</string>
+    <string name="app_name">qticket</string>
     <string name="title_activity_barcode_capture">BarcodeCaptureActivity</string>
     <string name="ok">OK</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>

@@ -8,16 +8,16 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
-    <ar.com.azous.qrttoo.ui.camera.CameraSourcePreview
+    <ar.com.azous.petromatic.qticket.ui.camera.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ar.com.azous.qrttoo.ui.camera.GraphicOverlay
+        <ar.com.azous.petromatic.qticket.ui.camera.GraphicOverlay
             android:id="@+id/graphicOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </ar.com.azous.qrttoo.ui.camera.CameraSourcePreview>
+    </ar.com.azous.petromatic.qticket.ui.camera.CameraSourcePreview>
 
 </LinearLayout>

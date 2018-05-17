@@ -1,4 +1,4 @@
-package ar.com.azous.qrttoo;
+package ar.com.azous.petromatic.qticket;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -27,10 +27,10 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import ar.com.azous.qrttoo.ui.camera.CameraSource;
-import ar.com.azous.qrttoo.ui.camera.CameraSourcePreview;
+import ar.com.azous.petromatic.qticket.ui.camera.CameraSource;
+import ar.com.azous.petromatic.qticket.ui.camera.CameraSourcePreview;
 
-import ar.com.azous.qrttoo.ui.camera.GraphicOverlay;
+import ar.com.azous.petromatic.qticket.ui.camera.GraphicOverlay;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;

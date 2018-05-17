@@ -1,4 +1,4 @@
-package ar.com.azous.qrttoo;
+package ar.com.azous.petromatic.qticket;
 
 import android.content.Intent;
 import android.os.Bundle;

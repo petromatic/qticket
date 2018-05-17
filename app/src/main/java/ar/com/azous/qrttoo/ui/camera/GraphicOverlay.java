@@ -1,4 +1,4 @@
-package ar.com.azous.qrttoo.ui.camera;
+package ar.com.azous.petromatic.qticket.ui.camera;
 
 import android.content.Context;
 import android.graphics.Canvas;
