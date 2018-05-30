@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 
+import static ar.com.azous.petromatic.qticket.BTDeviceScanActivity.EXTRA_DEVICE_ADDRESS;
+
 /**
  * Main activity demonstrating how to pass extra parameters to an activity that
  * reads barcodes.
@@ -22,8 +24,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private CompoundButton useFlash;
     private TextView statusMessage;
     private TextView barcodeValue;
+    private String bt_address;
 
     private static final int RC_BARCODE_CAPTURE = 9001;
+    private static final int RC_BT_DEVICE = 9002;
     private static final String TAG = "BarcodeMain";
 
     @Override
@@ -38,6 +42,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         useFlash = (CompoundButton) findViewById(R.id.use_flash);
 
         findViewById(R.id.read_barcode).setOnClickListener(this);
+
+        Intent intent = getIntent() ;
+        final String address = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
+
     }
 
     /**
@@ -47,16 +55,27 @@ public class MainActivity extends Activity implements View.OnClickListener {
      */
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.read_barcode) {
-            // launch barcode activity.
-            Intent intent = new Intent(this, BarcodeCaptureActivity.class);
-            intent.putExtra(BarcodeCaptureActivity.AutoFocus, autoFocus.isChecked());
-            intent.putExtra(BarcodeCaptureActivity.UseFlash, useFlash.isChecked());
+        switch (v.getId()){
+            case R.id.read_barcode:
+            {
+                // launch barcode activity.
+                Intent intent = new Intent(this, BarcodeCaptureActivity.class);
+                intent.putExtra(BarcodeCaptureActivity.AutoFocus, autoFocus.isChecked());
+                intent.putExtra(BarcodeCaptureActivity.UseFlash, useFlash.isChecked());
 
-            startActivityForResult(intent, RC_BARCODE_CAPTURE);
+                startActivityForResult(intent, RC_BARCODE_CAPTURE);
+            }break;
+            case R.id.bt_device_select:
+            {
+                // launch barcode activity.
+                Intent intent = new Intent(this, BTDeviceScanActivity.class);
+                startActivityForResult(intent, RC_BT_DEVICE);
+
+            }break;
         }
 
     }
+
 
     /**
      * Called when an activity you launched exits, giving you the requestCode
@@ -82,24 +101,29 @@ public class MainActivity extends Activity implements View.OnClickListener {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_BARCODE_CAPTURE) {
-            if (resultCode == CommonStatusCodes.SUCCESS) {
-                if (data != null) {
-                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-                    statusMessage.setText(R.string.barcode_success);
-                    barcodeValue.setText(barcode.displayValue);
-                    Log.d(TAG, "Barcode read: " + barcode.displayValue);
+        switch (requestCode){
+            case RC_BARCODE_CAPTURE:
+                if (resultCode == CommonStatusCodes.SUCCESS) {
+                    if (data != null) {
+                        Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
+                        statusMessage.setText(R.string.barcode_success);
+                        barcodeValue.setText(barcode.displayValue);
+                        Log.d(TAG, "Barcode read: " + barcode.displayValue);
+                    } else {
+                        statusMessage.setText(R.string.barcode_failure);
+                        Log.d(TAG, "No barcode captured, intent data is null");
+                    }
                 } else {
-                    statusMessage.setText(R.string.barcode_failure);
-                    Log.d(TAG, "No barcode captured, intent data is null");
+                    statusMessage.setText(String.format(getString(R.string.barcode_error),
+                            CommonStatusCodes.getStatusCodeString(resultCode)));
                 }
-            } else {
-                statusMessage.setText(String.format(getString(R.string.barcode_error),
-                        CommonStatusCodes.getStatusCodeString(resultCode)));
-            }
-        }
-        else {
-            super.onActivityResult(requestCode, resultCode, data);
+                break;
+            case RC_BT_DEVICE:
+                bt_address = data.getStringExtra(BTDeviceScanActivity.EXTRA_DEVICE_ADDRESS);
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
     }
 }

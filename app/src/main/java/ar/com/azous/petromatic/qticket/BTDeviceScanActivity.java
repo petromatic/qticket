@@ -37,8 +37,7 @@ public class BTDeviceScanActivity extends AppCompatActivity {
     public void onResume()
     {
         super.onResume();
-        //---------------------------------
-        VerificarEstadoBT();
+        checkBT();
 
         // Inicializa la array que contendra la lista de los dispositivos bluetooth vinculados
         mPairedDevicesArrayAdapter = new ArrayAdapter(this, R.layout.bt_device);//<-<- PARTE A MODIFICAR >->->
@@ -68,15 +67,14 @@ public class BTDeviceScanActivity extends AppCompatActivity {
             String info = ((TextView) v).getText().toString();
             String address = info.substring(info.length() - 17);
 
-            // Realiza un intent para iniciar la siguiente actividad
-            // mientras toma un EXTRA_DEVICE_ADDRESS que es la dirección MAC.
-            Intent i = new Intent(BTDeviceScanActivity.this, MainActivity.class);
-            i.putExtra(EXTRA_DEVICE_ADDRESS, address);
-            startActivity(i);
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+            setResult(RESULT_OK, resultIntent);
+            finish();
         }
     };
 
-    private void VerificarEstadoBT() {
+    private void checkBT() {
         // Comprueba que el dispositivo tiene Bluetooth y que está encendido.
         mBtAdapter= BluetoothAdapter.getDefaultAdapter();
         if(mBtAdapter==null) {
