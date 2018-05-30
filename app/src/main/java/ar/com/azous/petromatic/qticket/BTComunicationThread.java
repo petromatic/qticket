@@ -1,5 +1,6 @@
 package ar.com.azous.petromatic.qticket;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,24 +13,58 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import java.util.UUID;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+
+
 public class BTComunicationThread extends Thread {
+    // Identificador unico de servicio - SPP UUID
+    private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    // String para la direccion MAC
+    private static String address;
+    private BluetoothAdapter btAdapter = null;
+    private BluetoothSocket btSocket = null;
+
     private final InputStream inStream;
     private final OutputStream outStream;
     private Looper looper;
 
-    public BTComunicationThread(BluetoothSocket socket) {
-        InputStream tmpIn = null;
-        OutputStream tmpOut = null;
+    public BTComunicationThread(String address) {
+        this.address = address;
+
+        BluetoothDevice device = btAdapter.getRemoteDevice(address);
+
+        InputStream inStream = null;
+        OutputStream outStream = null;
+
+        try{
+            device.createRfcommSocketToServiceRecord(BTMODULEUUID);
+        }catch (IOException e) {
+            // TODO: Show error
+            // Toast.makeText(getBaseContext(), "La creacción del Socket fallo", Toast.LENGTH_LONG).show();
+        }
+        try {
+            btSocket.connect();
+        } catch (IOException e) {
+            try {
+                btSocket.close();
+            } catch (IOException e2) {
+            }
+        }
+
 
         try {
-            tmpIn = socket.getInputStream();
-            tmpOut = socket.getOutputStream();
+            inStream = btSocket.getInputStream();
+            outStream = btSocket.getOutputStream();
         } catch (IOException e) {
 
         }
 
-        inStream = tmpIn;
-        outStream = tmpOut;
+        this.inStream = inStream;
+        this.outStream = outStream;
     }
 
     public void run() {
