@@ -24,7 +24,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private CompoundButton useFlash;
     private TextView statusMessage;
     private TextView barcodeValue;
-    private String bt_address;
+    private BTComunicationThread btThread;
 
     private static final int RC_BARCODE_CAPTURE = 9001;
     private static final int RC_BT_DEVICE = 9002;
@@ -109,6 +109,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         statusMessage.setText(R.string.barcode_success);
                         barcodeValue.setText(barcode.displayValue);
                         Log.d(TAG, "Barcode read: " + barcode.displayValue);
+                        if(btThread != null){
+                            btThread.write(barcode.displayValue);
+                        }
                     } else {
                         statusMessage.setText(R.string.barcode_failure);
                         Log.d(TAG, "No barcode captured, intent data is null");
@@ -119,7 +122,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }
                 break;
             case RC_BT_DEVICE:
-                bt_address = data.getStringExtra(BTDeviceScanActivity.EXTRA_DEVICE_ADDRESS);
+                String address = data.getStringExtra(BTDeviceScanActivity.EXTRA_DEVICE_ADDRESS);
+                btThread = new BTComunicationThread(address);
+
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
