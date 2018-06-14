@@ -34,6 +34,10 @@
         <activity
             android:name=".BarcodeCaptureActivity"
             android:label="Read Barcode" />
+
+        <activity
+            android:name=".BTDeviceScanActivity"
+            android:label="Scan Bluetooth" />
     </application>
 
 </manifest>

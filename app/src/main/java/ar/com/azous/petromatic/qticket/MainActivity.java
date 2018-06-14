@@ -1,5 +1,7 @@
 package ar.com.azous.petromatic.qticket;
 
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
@@ -42,10 +44,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         useFlash = (CompoundButton) findViewById(R.id.use_flash);
 
         findViewById(R.id.read_barcode).setOnClickListener(this);
+        findViewById(R.id.bt_device_select).setOnClickListener(this);
 
         Intent intent = getIntent() ;
         final String address = intent.getStringExtra(EXTRA_DEVICE_ADDRESS);
-
     }
 
     /**
@@ -111,6 +113,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         Log.d(TAG, "Barcode read: " + barcode.displayValue);
                         if(btThread != null){
                             btThread.write(barcode.displayValue);
+                        }else{
+                            Log.d(TAG, "btThread is null");
                         }
                     } else {
                         statusMessage.setText(R.string.barcode_failure);
@@ -123,6 +127,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
             case RC_BT_DEVICE:
                 String address = data.getStringExtra(BTDeviceScanActivity.EXTRA_DEVICE_ADDRESS);
+                Log.d(TAG, "Bluetooth: "+address);
                 btThread = new BTComunicationThread(address);
 
                 break;

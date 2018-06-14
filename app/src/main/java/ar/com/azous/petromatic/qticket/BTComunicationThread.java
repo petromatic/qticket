@@ -1,10 +1,14 @@
 package ar.com.azous.petromatic.qticket;
 
+import android.app.Service;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.ParcelUuid;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -18,14 +22,13 @@ import java.util.UUID;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.widget.Toast;
 
 
 public class BTComunicationThread extends Thread {
     // Identificador unico de servicio - SPP UUID
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     // String para la direccion MAC
-    private static String address;
-    private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
 
     private final InputStream inStream;
@@ -33,34 +36,58 @@ public class BTComunicationThread extends Thread {
     private Looper looper;
 
     public BTComunicationThread(String address) {
-        this.address = address;
+        BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        BluetoothDevice device = btAdapter.getRemoteDevice(address);
+        BluetoothDevice device = mBtAdapter.getRemoteDevice(address);
+        for (ParcelUuid uuid :device.getUuids()) {
+            Log.d("BT", uuid.toString());
+        }
+
+        if(device.getBondState()==device.BOND_BONDED){
+            try {
+                btSocket = device.createRfcommSocketToServiceRecord(BTMODULEUUID);
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                Log.d("BT","socket not created");
+                e1.printStackTrace();
+            }
+        }else{
+            Log.d("BT","Device not paired");
+            // Toast.makeText(getBaseContext(), "El dispositivo no está pareado", Toast.LENGTH_LONG).show();
+        }
 
         InputStream inStream = null;
         OutputStream outStream = null;
 
-        try{
-            device.createRfcommSocketToServiceRecord(BTMODULEUUID);
-        }catch (IOException e) {
-            // TODO: Show error
-            // Toast.makeText(getBaseContext(), "La creacción del Socket fallo", Toast.LENGTH_LONG).show();
-        }
         try {
+            Log.d("BT","Connecting");
             btSocket.connect();
         } catch (IOException e) {
+            Log.d("BT","Connecting error: " + e.getMessage());
             try {
-                btSocket.close();
-            } catch (IOException e2) {
+                Log.d("BT","trying fallback...");
+
+                btSocket =(BluetoothSocket) device.getClass().getMethod("createRfcommSocket", new Class[] {int.class}).invoke(device,1);
+                btSocket.connect();
+
+                Log.d("BT","Connected");
+            }
+            catch (Exception e2) {
+                Log.d("BT", "Couldn't establish Bluetooth connection!");
+                try {
+                    btSocket.close();
+                } catch (IOException e3) {
+                }
             }
         }
 
 
         try {
+            Log.d("BT","Getting sockets");
             inStream = btSocket.getInputStream();
             outStream = btSocket.getOutputStream();
         } catch (IOException e) {
-
+            Log.d("BT","Getting sockets error: " + e.getMessage());
         }
 
         this.inStream = inStream;
@@ -76,7 +103,7 @@ public class BTComunicationThread extends Thread {
         try {
             outStream.write(input.getBytes());
         } catch (IOException e) {
-            // TODO: Show error
+            Log.d("BT", "BT write error: "+e.getMessage());
         }
     }
 
